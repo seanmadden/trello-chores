@@ -1,0 +1,12 @@
+{
+  "name": "trello-chores",
+  "version": "0.0.1",
+  "dependencies": {
+    "trello": ">=0.4.1",
+    "jest": ">=0.1.4",
+    "lodash": ">=3.10.1",
+    "cron": ">=1.0.0",
+    "vows": ">=0.8.1"
+  }
+
+}
