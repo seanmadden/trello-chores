@@ -1,6 +1,7 @@
 'use strict';
 
 const Trello = require("trello");
+const parser = require("HumanCron/main.js");
 const _ = require("lodash");
 const fs = require("fs");
 
@@ -32,15 +33,32 @@ trello.getBoards("me").then((boards) => {
     return trello.getListsOnBoard(id)
 }).then((lists) => {
 
-        Promise.all(
+        return Promise.all(
             lists.map((list) => {
                 return trello.getCardsOnList(list.id);
             })
-        ).then((cards) => {
-                cards.forEach((cardList) => {
-                    console.log(_.filter(cardList, (card) => {return card.name === SCHEDULE_CARD}));
-                })
+        );
+    }
+).then((cards) => {
+        return Promise.all(
+            cards.map((cardList) => {
+                return _.filter(cardList, (card) => {
+                    return card.name === SCHEDULE_CARD
+                });
             })
+        )
+    }
+).then((schedules) => {
+        return Promise.all(
+            schedules.map((scheduleCard) => {
+                if (scheduleCard[0] !== undefined) {
+                    return parser(scheduleCard[0].desc);
+                }
+            })
+        )
+    }
+).then((cronStrings) => {
+        console.log(cronStrings);
     }
 );
 
