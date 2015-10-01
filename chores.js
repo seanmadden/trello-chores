@@ -1,7 +1,7 @@
 'use strict';
 
 const Trello = require("trello");
-const parser = require("HumanCron/main.js");
+const parser = require("HumanCron");
 const _ = require("lodash");
 const fs = require("fs");
 
