@@ -40,6 +40,7 @@ trello.getBoards("me").then((boards) => {
         );
     }
 ).then((cards) => {
+        //get the schedule cards
         return Promise.all(
             cards.map((cardList) => {
                 return _.filter(cardList, (card) => {
@@ -49,15 +50,21 @@ trello.getBoards("me").then((boards) => {
         )
     }
 ).then((schedules) => {
+        //parse the schedule cards to cron syntax
         return Promise.all(
             schedules.map((scheduleCard) => {
                 if (scheduleCard[0] !== undefined) {
-                    return parser(scheduleCard[0].desc);
+                    return {
+                        cronString: parser(scheduleCard[0].desc),
+
+
+                    };
                 }
             })
         )
     }
 ).then((cronStrings) => {
+        //Print the cron strings
         console.log(cronStrings);
     }
 );
