@@ -8,8 +8,6 @@ const fs = require("fs");
 const CHORE_BOARD = "Chores";
 const SCHEDULE_CARD = "Schedule";
 
-var choreLists;
-
 const keys = JSON.parse(fs.readFileSync("./keys.json"));
 
 
@@ -39,29 +37,40 @@ trello.getBoards("me").then((boards) => {
             })
         );
     }
-).then((cards) => {
-        //get the schedule cards
-        return Promise.all(
-            cards.map((cardList) => {
-                return _.filter(cardList, (card) => {
-                    return card.name === SCHEDULE_CARD
-                });
-            })
-        )
-    }
-).then((schedules) => {
-        //parse the schedule cards to cron syntax
-        return Promise.all(
-            schedules.map((scheduleCard) => {
-                if (scheduleCard[0] !== undefined) {
-                    return {
-                        cronString: parser(scheduleCard[0].desc),
-
-
-                    };
+).then((listsOfCards) => {
+        //return an object that separates the tasks from the schedules
+        let listOfChores = [];
+        return new Promise((resolve, reject) => {
+            for (let list of listsOfCards) {
+                let chores = {tasks: []};
+                for (let card of list) {
+                    if (card.name.toLowerCase() === "schedule") {
+                        chores.schedule = card;
+                    } else {
+                        chores.tasks.push(card);
+                    }
                 }
-            })
-        )
+                if (chores.tasks.length > 0) listOfChores.push(chores);
+            }
+            resolve(listOfChores);
+        })
+    }
+).then((listOfChores) => {
+        //parse the schedule cards to cron syntax at some point
+        //Combine the chore cards into a single card with a checklist
+        //Add the card to the correct board
+
+
+        //return Promise((resolve, reject) => {
+        //        listOfChores.map((scheduleCard) => {
+        //            if (scheduleCard[0] !== undefined) {
+        //                return {
+        //                    cronString: parser(scheduleCard[0].desc),
+        //                };
+        //            }
+        //        })
+        //    }
+        //)
     }
 ).then((cronStrings) => {
         //Print the cron strings
